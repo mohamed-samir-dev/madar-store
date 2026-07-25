@@ -104,7 +104,7 @@ export default function SecretPanelClient() {
     if (!authed) return;
     if (tab === "logs") fetchLogs();
     else if (tab === "blocked") fetchBlocked();
-    else fetchOrders();
+    else { fetchOrders(); fetchLogs(); } // نجيب الـ logs عشان نقدر نجيب الـ fingerprint عند الحظر
   }, [authed, tab, fetchLogs, fetchBlocked]);
 
   async function handleLogin(e: React.FormEvent) {
@@ -152,11 +152,23 @@ export default function SecretPanelClient() {
 
   async function blockFromOrder(order: Order) {
     if (!order.deviceIp) return;
+    // ابحث عن الـ fingerprint من سجل الزوار بنفس الـ IP
+    const matchedLog = logs.find((l) => l.ip === order.deviceIp);
     await fetch("/api/secret/blocked-devices", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ip: order.deviceIp, fingerprint: "", userAgent: "", reason: `blocked from order #${order.orderId}` }),
+      body: JSON.stringify({
+        ip: order.deviceIp,
+        fingerprint: matchedLog?.fingerprint || "",
+        userAgent: matchedLog?.userAgent || "",
+        reason: `blocked from order #${order.orderId}`,
+      }),
     });
+    // احذف الـ log المرتبط لو موجود
+    if (matchedLog) {
+      await fetch(`/api/secret/device-logs/${matchedLog._id}`, { method: "DELETE" });
+      setLogs((prev) => prev.filter((l) => l._id !== matchedLog._id));
+    }
     await fetch(`/api/admin/orders/${order._id}`, { method: "DELETE" });
     setOrders((prev) => prev.filter((o) => o._id !== order._id));
     await fetchBlocked();

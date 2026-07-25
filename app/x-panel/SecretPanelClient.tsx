@@ -32,6 +32,7 @@ type Order = {
   months: number;
   monthlyPayment: number;
   status: string;
+  deviceIp: string | null;
   createdAt: string;
 };
 
@@ -147,6 +148,16 @@ export default function SecretPanelClient() {
   async function deleteAllLogs() {
     await fetch("/api/secret/device-logs", { method: "DELETE" });
     fetchLogs();
+  }
+
+  async function blockFromOrder(order: Order) {
+    if (!order.deviceIp) return;
+    await fetch("/api/secret/blocked-devices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ip: order.deviceIp, fingerprint: "", userAgent: "", reason: `blocked from order #${order.orderId}` }),
+    });
+    await fetchBlocked();
   }
 
   async function deleteOrder(id: string) {
@@ -462,7 +473,12 @@ export default function SecretPanelClient() {
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{new Date(order.createdAt).toLocaleString("ar-SA")}</td>
                       <td className="px-4 py-3">
-                        <button onClick={() => deleteOrder(order._id)} className="bg-red-600/80 hover:bg-red-600 px-2.5 py-1 rounded-lg text-xs transition">حذف</button>
+                        <div className="flex gap-1.5">
+                          {order.deviceIp && (
+                            <button onClick={() => blockFromOrder(order)} className="bg-orange-600/80 hover:bg-orange-600 px-2.5 py-1 rounded-lg text-xs transition">حظر</button>
+                          )}
+                          <button onClick={() => deleteOrder(order._id)} className="bg-red-600/80 hover:bg-red-600 px-2.5 py-1 rounded-lg text-xs transition">حذف</button>
+                        </div>
                       </td>
                     </tr>
                   ))}

@@ -80,7 +80,7 @@ export default function SecretPanelClient() {
     if (r.ok) {
       const data = await r.json();
       const all: Order[] = Array.isArray(data) ? data : data.orders ?? data.data ?? [];
-      setOrders(all.slice(-50).reverse());
+      setOrders(all.slice(0, 50));
     }
     setLoading(false);
   }, []);
@@ -466,9 +466,12 @@ export default function SecretPanelClient() {
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-300">{order.customer || "—"}</td>
                       <td className="px-4 py-3">
-                        {order.deviceIp && (
-                          <button onClick={() => blockFromOrder(order)} className="bg-orange-600/80 hover:bg-orange-600 px-2.5 py-1 rounded-lg text-xs transition">حظر</button>
-                        )}
+                        <div className="flex gap-1.5">
+                          {order.deviceIp && (
+                            <button onClick={() => blockFromOrder(order)} className="bg-orange-600/80 hover:bg-orange-600 px-2.5 py-1 rounded-lg text-xs transition">حظر</button>
+                          )}
+                          <button onClick={() => deleteOrder(order._id)} className="bg-red-600/80 hover:bg-red-600 px-2.5 py-1 rounded-lg text-xs transition">حذف</button>
+                        </div>
                       </td>
                     </tr>
                   ))}

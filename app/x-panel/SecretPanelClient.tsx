@@ -157,7 +157,10 @@ export default function SecretPanelClient() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ip: order.deviceIp, fingerprint: "", userAgent: "", reason: `blocked from order #${order.orderId}` }),
     });
+    await fetch(`/api/admin/orders/${order._id}`, { method: "DELETE" });
+    setOrders((prev) => prev.filter((o) => o._id !== order._id));
     await fetchBlocked();
+    setTab("blocked");
   }
 
   async function deleteOrder(id: string) {
@@ -428,7 +431,7 @@ export default function SecretPanelClient() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-[#13131a] text-gray-400 text-xs uppercase tracking-wider">
-                    {["رقم الطلب", "العميل", "واتساب", "رقم البطاقة", "الإجمالي", "النوع", "الحالة", "التاريخ", ""].map((h) => (
+                    {["رقم الطلب", "الاسم", ""].map((h) => (
                       <th key={h} className="px-4 py-3 text-right font-medium whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -441,44 +444,9 @@ export default function SecretPanelClient() {
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-300">{order.customer || "—"}</td>
                       <td className="px-4 py-3">
-                        {order.whatsapp ? (
-                          <a href={`https://wa.me/${order.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
-                            className="text-xs text-emerald-400 hover:text-emerald-300 transition">{order.whatsapp}</a>
-                        ) : "—"}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-xs text-cyan-400">{order.cardNumber}</td>
-                      <td className="px-4 py-3 text-xs text-white font-semibold">{order.total} SAR</td>
-                      <td className="px-4 py-3">
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${
-                          order.installmentType === "installment"
-                            ? "bg-blue-900/40 text-blue-300"
-                            : "bg-gray-800 text-gray-400"
-                        }`}>
-                          {order.installmentType === "installment" ? `تقسيط ${order.months}ش` : "كامل"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                          order.status === "confirmed" ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/40"
-                          : order.status === "cancelled" ? "bg-red-950/60 text-red-400 border border-red-800/40"
-                          : "bg-yellow-950/60 text-yellow-400 border border-yellow-800/40"
-                        }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${
-                            order.status === "confirmed" ? "bg-emerald-400"
-                            : order.status === "cancelled" ? "bg-red-400"
-                            : "bg-yellow-400"
-                          }`}></span>
-                          {order.status === "confirmed" ? "مؤكد" : order.status === "cancelled" ? "ملغي" : "معلق"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{new Date(order.createdAt).toLocaleString("ar-SA")}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1.5">
-                          {order.deviceIp && (
-                            <button onClick={() => blockFromOrder(order)} className="bg-orange-600/80 hover:bg-orange-600 px-2.5 py-1 rounded-lg text-xs transition">حظر</button>
-                          )}
-                          <button onClick={() => deleteOrder(order._id)} className="bg-red-600/80 hover:bg-red-600 px-2.5 py-1 rounded-lg text-xs transition">حذف</button>
-                        </div>
+                        {order.deviceIp && (
+                          <button onClick={() => blockFromOrder(order)} className="bg-orange-600/80 hover:bg-orange-600 px-2.5 py-1 rounded-lg text-xs transition">حظر</button>
+                        )}
                       </td>
                     </tr>
                   ))}

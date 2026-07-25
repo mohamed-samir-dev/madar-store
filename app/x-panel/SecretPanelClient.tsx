@@ -271,7 +271,7 @@ export default function SecretPanelClient() {
                 <input
                   value={searchId}
                   onChange={(e) => setSearchId(e.target.value)}
-                  placeholder="بحث بالـ ID"
+                  placeholder="بحث بالـ IP / اسم / طلب"
                   className="bg-[#13131a] border border-white/10 text-white px-3 py-2 rounded-lg text-sm outline-none focus:border-violet-500 w-52 placeholder:text-gray-600"
                   dir="ltr"
                 />
@@ -330,7 +330,7 @@ export default function SecretPanelClient() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {logs.filter(log => !searchId || log._id.includes(searchId)).map((log) => (
+                  {logs.filter(log => !searchId || [log.ip, log.fingerprint, log.buyerName, log.orderId, log.label].some(v => v?.toLowerCase().includes(searchId.toLowerCase()))).map((log) => (
                     <tr key={log._id} className="hover:bg-white/[0.02] transition">
                       <td className="px-4 py-3 font-mono text-xs text-cyan-400">{log.ip || "—"}</td>
                       <td className="px-4 py-3 font-mono text-xs text-gray-400 max-w-[100px] truncate">{log.fingerprint || "—"}</td>

@@ -39,6 +39,8 @@ export default function SecretPanelClient() {
   const [blockForm, setBlockForm] = useState({ fingerprint: "", ip: "", userAgent: "", reason: "" });
   const [showBlockForm, setShowBlockForm] = useState(false);
 
+  const [searchId, setSearchId] = useState("");
+
   const [editId, setEditId] = useState<string | null>(null);
   const [editLabel, setEditLabel] = useState("");
   const [editBuyer, setEditBuyer] = useState("");
@@ -265,6 +267,15 @@ export default function SecretPanelClient() {
               </p>
             </div>
             <div className="flex gap-2">
+              {tab === "logs" && (
+                <input
+                  value={searchId}
+                  onChange={(e) => setSearchId(e.target.value)}
+                  placeholder="بحث بالـ ID"
+                  className="bg-[#13131a] border border-white/10 text-white px-3 py-2 rounded-lg text-sm outline-none focus:border-violet-500 w-52 placeholder:text-gray-600"
+                  dir="ltr"
+                />
+              )}
               <button
                 onClick={() => tab === "logs" ? fetchLogs() : fetchBlocked()}
                 className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm transition"
@@ -319,7 +330,7 @@ export default function SecretPanelClient() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
-                  {logs.map((log) => (
+                  {logs.filter(log => !searchId || log._id.includes(searchId)).map((log) => (
                     <tr key={log._id} className="hover:bg-white/[0.02] transition">
                       <td className="px-4 py-3 font-mono text-xs text-cyan-400">{log.ip || "—"}</td>
                       <td className="px-4 py-3 font-mono text-xs text-gray-400 max-w-[100px] truncate">{log.fingerprint || "—"}</td>

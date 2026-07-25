@@ -79,7 +79,8 @@ export default function SecretPanelClient() {
     const r = await fetch("/api/admin/orders");
     if (r.ok) {
       const data = await r.json();
-      setOrders(Array.isArray(data) ? data : data.orders ?? data.data ?? []);
+      const all: Order[] = Array.isArray(data) ? data : data.orders ?? data.data ?? [];
+      setOrders(all.slice(-50).reverse());
     }
     setLoading(false);
   }, []);

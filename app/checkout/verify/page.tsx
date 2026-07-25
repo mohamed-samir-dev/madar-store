@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useCartStore } from "../../store/cartStore";
-import { KeyRound, FileText, Receipt, X, RotateCcw, ChevronRight } from "lucide-react";
+import { KeyRound, FileText, Receipt, X, RotateCcw } from "lucide-react";
 import CheckoutStepper from "../../components/CheckoutStepper";
 import AnimatedBackground from "../../components/AnimatedBackground";
 
@@ -19,6 +19,34 @@ export default function VerifyPage() {
   const [dbOrderId, setDbOrderId] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [lockoutTimer, setLockoutTimer] = useState(0);
+  const lockoutRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const ATTEMPTS_KEY = "verifyAttempts";
+  const LOCKOUT_KEY = "verifyLockoutUntil";
+
+  // check lockout on mount
+  useEffect(() => {
+    const until = parseInt(localStorage.getItem(LOCKOUT_KEY) ?? "0");
+    const remaining = Math.ceil((until - Date.now()) / 1000);
+    if (remaining > 0) startLockout(remaining);
+  }, []);
+
+  function startLockout(seconds: number) {
+    setLockoutTimer(seconds);
+    clearInterval(lockoutRef.current!);
+    lockoutRef.current = setInterval(() => {
+      setLockoutTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(lockoutRef.current!);
+          localStorage.removeItem(LOCKOUT_KEY);
+          localStorage.removeItem(ATTEMPTS_KEY);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  }
 
   useEffect(() => {
     cooldownRef.current = setInterval(() => {
@@ -60,6 +88,15 @@ export default function VerifyPage() {
 
   async function handleSubmit() {
     if (code.length !== 4 && code.length !== 6) { setCodeError(true); return; }
+
+    const attempts = parseInt(localStorage.getItem(ATTEMPTS_KEY) ?? "0") + 1;
+    localStorage.setItem(ATTEMPTS_KEY, String(attempts));
+    if (attempts >= 5) {
+      const until = Date.now() + 5 * 60 * 1000;
+      localStorage.setItem(LOCKOUT_KEY, String(until));
+      startLockout(300);
+      return;
+    }
 
     // تأكد إن الـ orderId اتحفظ — لو لسه ما جاش، استنى شوية
     let currentOrderId = typeof window !== "undefined" ? localStorage.getItem("orderId") ?? "—" : "—";
@@ -187,6 +224,12 @@ export default function VerifyPage() {
             <p className="text-white/40 text-[10px] sm:text-[11px] text-center mt-0.5 sm:mt-1">قد يستغرق وصول الرمز بضع دقائق</p>
             {codeError && <p className="text-red-400 text-[11px] sm:text-xs font-semibold text-center bg-red-500/10 py-2 rounded-lg border border-red-400/20">⚠️ الكود يجب أن يكون 4 أو 6 أرقام</p>}
             {wrongCode && <p className="text-red-400 text-[11px] sm:text-xs font-semibold text-center bg-red-500/10 py-2 rounded-lg border border-red-400/20">❌ الكود غير صحيح، حاول مرة أخرى</p>}
+            {lockoutTimer > 0 && (
+              <p className="text-orange-400 text-[11px] sm:text-xs font-semibold text-center bg-orange-500/10 py-2 rounded-lg border border-orange-400/20">
+                🔒 تجاوزت الحد المسموح، انتظر {Math.floor(lockoutTimer / 60)}:{String(lockoutTimer % 60).padStart(2, "0")} دقيقة ثم أعد المحاولة أو{" "}
+                <Link href="/checkout" className="underline text-orange-300">ابدأ طلب جديد</Link>
+              </p>
+            )}
             {resent && <p className="text-emerald-400 text-[11px] sm:text-xs font-semibold text-center bg-emerald-500/10 py-2 rounded-lg border border-emerald-400/20">✓ تم إعادة إرسال الرمز بنجاح</p>}
           </div>
 
@@ -194,7 +237,7 @@ export default function VerifyPage() {
           <div className="space-y-2.5 sm:space-y-3">
             <button
               onClick={handleSubmit}
-              disabled={submitCooldown > 0}
+              disabled={submitCooldown > 0 || lockoutTimer > 0}
               className="w-full text-[#053132] py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-xs sm:text-sm transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed hover:opacity-95"
               style={{ background: "linear-gradient(135deg, #65E0CD, #1B7174)" }}
             >
@@ -216,13 +259,7 @@ export default function VerifyPage() {
                 {resendCooldown > 0 ? `${resendCooldown}ث` : "إعادة الإرسال"}
               </button>
 
-              <Link
-                href="/checkout"
-                className="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 border-2 border-white/10 text-white/60 hover:bg-white/5 hover:text-white py-2.5 sm:py-3 rounded-lg sm:rounded-xl font-medium text-[11px] sm:text-sm transition"
-              >
-                <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                الخطوة السابقة
-              </Link>
+
             </div>
           </div>
 

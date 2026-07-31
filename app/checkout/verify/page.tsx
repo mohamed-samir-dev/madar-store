@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useCartStore } from "../../store/cartStore";
 import { KeyRound, FileText, Receipt, X, RotateCcw } from "lucide-react";
@@ -25,7 +25,7 @@ export default function VerifyPage() {
   const ATTEMPTS_KEY = "verifyAttempts";
   const LOCKOUT_KEY = "verifyLockoutUntil";
 
-  function startLockout(seconds: number) {
+  const startLockout = useCallback((seconds: number) => {
     setLockoutTimer(seconds);
     clearInterval(lockoutRef.current!);
     lockoutRef.current = setInterval(() => {
@@ -39,15 +39,15 @@ export default function VerifyPage() {
         return prev - 1;
       });
     }, 1000);
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // check lockout on mount
   useEffect(() => {
     const until = parseInt(localStorage.getItem(LOCKOUT_KEY) ?? "0");
     const remaining = Math.ceil((until - Date.now()) / 1000);
     if (remaining > 0) startLockout(remaining);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [startLockout]);
 
   useEffect(() => {
     cooldownRef.current = setInterval(() => {

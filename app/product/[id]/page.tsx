@@ -1,30 +1,18 @@
 import type { Metadata } from "next";
 import ProductPageClient from "./ProductPageClient";
+import { getProductById } from "../../lib/productsCache";
+import { getCompanyData } from "../../lib/companyCache";
 
 const BACKEND = process.env.BACKEND_URL || "http://localhost:5000";
 const SITE_URL = "https://madar-electronics.com";
 
-async function getProduct(id: string) {
-  try {
-    const r = await fetch(`${BACKEND}/api/products/${id}`, { next: { revalidate: 3600 } });
-    return r.ok ? r.json() : null;
-  } catch {
-    return null;
-  }
-}
-
 async function getCompany() {
-  try {
-    const r = await fetch(`${BACKEND}/api/admin/company`, { next: { revalidate: 3600 } });
-    return r.ok ? r.json() : {};
-  } catch {
-    return {};
-  }
+  return getCompanyData();
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const [product, company] = await Promise.all([getProduct(id), getCompany()]);
+  const [product, company] = await Promise.all([getProductById(id), getCompany()]);
 
   if (!product) {
     return { title: "المنتج غير موجود" };
@@ -82,7 +70,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [product, company] = await Promise.all([getProduct(id), getCompany()]);
+  const [product, company] = await Promise.all([getProductById(id), getCompany()]);
 
   const siteName = company.nameAr || "مدار";
   const price = product?.salePrice || product?.price || 0;

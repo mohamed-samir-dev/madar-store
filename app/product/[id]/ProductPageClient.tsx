@@ -13,7 +13,7 @@ import ProductDetails from "./components/ProductDetails";
 import AnimatedBackground from "../../components/AnimatedBackground";
 
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const BACKEND = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function ProductPageClient({ id }: { id: string }) {
   const router = useRouter();
@@ -23,7 +23,7 @@ export default function ProductPageClient({ id }: { id: string }) {
   const addItem = useCartStore((s) => s.addItem);
 
   useEffect(() => {
-    fetch(`${API}/api/products/${id}`)
+    fetch(`/api/products/${id}`)
       .then((r) => r.json())
       .then(setProduct)
       .catch(console.error)
@@ -60,7 +60,7 @@ export default function ProductPageClient({ id }: { id: string }) {
     );
 
   const resolveImg = (src: string) =>
-    src.startsWith("http") ? src : src.startsWith("/uploads") ? src : `${API}${src}`;
+    src.startsWith("http") ? src : src.startsWith("/uploads") ? src : `${BACKEND}${src}`;
   const merged = [...(product.images || []), ...(product.image ? [product.image] : [])];
   const allImages = [...new Set(merged)].map(resolveImg);
 

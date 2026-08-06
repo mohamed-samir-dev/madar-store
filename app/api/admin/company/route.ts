@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { getBackend, forwardCookies } from "../_lib";
+import { COMPANY_TAG } from "../../../lib/companyCache";
 
 export async function GET(req: NextRequest) {
   const res = await fetch(`${getBackend()}/api/admin/company`, forwardCookies(req, {}));
@@ -18,6 +19,7 @@ export async function PUT(req: NextRequest) {
   }));
   if (!res.ok) return NextResponse.json({ error: "Backend unavailable" }, { status: res.status });
   const data = await res.json();
+  revalidateTag(COMPANY_TAG);
   revalidatePath("/");
   return NextResponse.json(data, { status: res.status });
 }

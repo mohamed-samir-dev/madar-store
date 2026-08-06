@@ -1,5 +1,6 @@
 import HomeCategorySection from "./HomeCategorySection";
 import type { Product } from "./products/types";
+import { getAllProducts } from "../lib/productsCache";
 
 const BACKEND = process.env.BACKEND_URL || "http://localhost:5000";
 
@@ -67,8 +68,8 @@ type Setting = { category: string; subCategory: string; showInHome: boolean; ord
 async function getHomeCategories(): Promise<{ name: string; order: number }[]> {
   try {
     const [catRes, settingsRes] = await Promise.all([
-      fetch(`${BACKEND}/api/admin/sub-categories/public`, { cache: "no-store" }),
-      fetch(`${BACKEND}/api/admin/sub-categories/home-settings`, { cache: "no-store" }),
+      fetch(`${BACKEND}/api/admin/sub-categories/public`, { next: { revalidate: 3600 } }),
+      fetch(`${BACKEND}/api/admin/sub-categories/home-settings`, { next: { revalidate: 3600 } }),
     ]);
     const allCats: { name: string }[] = catRes.ok ? await catRes.json() : [];
     const settings: Setting[] = settingsRes.ok ? await settingsRes.json() : [];
@@ -91,22 +92,11 @@ async function getCategoryBanners(category: string): Promise<string[]> {
   try {
     const res = await fetch(
       `${BACKEND}/api/admin/category-banners/${encodeURIComponent(category)}`,
-      { cache: "no-store" }
+      { next: { revalidate: 3600 } }
     );
     if (!res.ok) return [];
     const data: BannerItem[] = await res.json();
     return Array.isArray(data) ? data.filter((b) => b.active && b.url).map((b) => b.url) : [];
-  } catch {
-    return [];
-  }
-}
-
-async function getAllProducts(): Promise<Product[]> {
-  try {
-    const res = await fetch(`${BACKEND}/api/products`, { cache: "no-store" });
-    if (!res.ok) return [];
-    const data: Product[] = await res.json();
-    return Array.isArray(data) ? data : [];
   } catch {
     return [];
   }
@@ -117,7 +107,7 @@ export default async function HomeCategorySections() {
   if (!categories.length) return null;
 
   const [allProducts, ...bannersResults] = await Promise.all([
-    getAllProducts(),
+    getAllProducts() as Promise<Product[]>,
     ...categories.map(({ name }) => getCategoryBanners(name)),
   ]);
 

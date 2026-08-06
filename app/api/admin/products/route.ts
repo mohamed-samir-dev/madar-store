@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getBackend, forwardCookies } from "../_lib";
+import { revalidateTag } from "next/cache";
+import { PRODUCTS_TAG } from "../../../lib/productsCache";
 
 export async function GET(req: NextRequest) {
   const res = await fetch(`${getBackend()}/api/admin/products`, forwardCookies(req, { method: "GET" }));
@@ -18,5 +20,6 @@ export async function POST(req: NextRequest) {
     })
   );
   const data = await res.json();
+  if (res.ok) revalidateTag(PRODUCTS_TAG);
   return NextResponse.json(data, { status: res.status });
 }

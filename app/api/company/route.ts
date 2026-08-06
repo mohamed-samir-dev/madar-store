@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { getBackend } from "../admin/_lib";
+import { getCompanyData } from "../../lib/companyCache";
 
 export async function GET() {
-  const res = await fetch(`${getBackend()}/api/admin/company`);
-  const data = await res.json();
-  return NextResponse.json(data, { status: res.status });
+  const data = await getCompanyData();
+  return NextResponse.json(data);
 }

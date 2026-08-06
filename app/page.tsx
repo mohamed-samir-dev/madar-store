@@ -3,17 +3,13 @@ import StaticCategories from "./components/StaticCategories";
 import HomeCategorySections from "./components/HomeCategorySections";
 import CustomerReviews from "./components/CustomerReviews";
 import AnimatedBackground from "./components/AnimatedBackground";
+import { getCompanyData } from "./lib/companyCache";
 
 const BACKEND = process.env.BACKEND_URL || "http://localhost:5000";
 const SITE_URL = "https://madar-electronics.com";
 
 async function getCompany() {
-  try {
-    const r = await fetch(`${BACKEND}/api/admin/company`, { next: { revalidate: 3600 } });
-    return r.ok ? r.json() : {};
-  } catch {
-    return {};
-  }
+  return getCompanyData();
 }
 
 export default async function Home() {

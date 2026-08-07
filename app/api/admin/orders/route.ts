@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
-import { getBackend } from "../_lib";
+import { NextRequest, NextResponse } from "next/server";
+import { getBackend, forwardCookies } from "../_lib";
 
-export async function GET() {
-  const res = await fetch(`${getBackend()}/api/checkout`);
+export async function GET(req: NextRequest) {
+  const res = await fetch(`${getBackend()}/api/checkout`, forwardCookies(req, {}));
   const data = await res.json();
-  return NextResponse.json(data);
+  return NextResponse.json(data, { status: res.status });
 }

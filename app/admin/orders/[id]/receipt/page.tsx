@@ -40,7 +40,16 @@ export default function ReceiptPrintPage() {
   }, [id]);
 
   useEffect(() => {
-    if (data) setTimeout(() => window.print(), 500);
+    if (!data) return;
+    const imgs = document.querySelectorAll<HTMLImageElement>("img");
+    const pending = Array.from(imgs).filter((img) => !img.complete);
+    if (pending.length === 0) { window.print(); return; }
+    let loaded = 0;
+    pending.forEach((img) => {
+      const done = () => { if (++loaded === pending.length) window.print(); };
+      img.addEventListener("load", done, { once: true });
+      img.addEventListener("error", done, { once: true });
+    });
   }, [data]);
 
   if (!data) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;

@@ -247,7 +247,7 @@ export default function VerifyPage() {
 
             <div className="flex gap-2 sm:gap-2.5">
               <button
-                disabled={resendCooldown > 0}
+                disabled={resendCooldown > 0 || lockoutTimer > 0}
                 onClick={() => {
                   fetch("/api/resend", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ orderId, customerName: customer?.name ?? "—" }) });
                   setResent(true);

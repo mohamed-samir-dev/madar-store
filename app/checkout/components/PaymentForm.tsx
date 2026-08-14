@@ -221,6 +221,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormPropsExtended) {
                 autoComplete="cc-number"
                 type="text"
                 inputMode="numeric"
+                pattern="[0-9 ]*"
                 placeholder="0000  0000  0000  0000"
                 maxLength={19}
                 dir="ltr"
@@ -254,6 +255,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormPropsExtended) {
                 autoComplete="cc-exp"
                 type="text"
                 inputMode="numeric"
+                pattern="[0-9]*"
                 placeholder="MM / YY"
                 maxLength={5}
                 value={fields.age}
@@ -274,8 +276,9 @@ export default function PaymentForm({ onSubmit }: PaymentFormPropsExtended) {
               </label>
               <input
                 autoComplete="cc-csc"
-                type="password"
+                type="text"
                 inputMode="numeric"
+                pattern="[0-9]*"
                 placeholder="•••"
                 maxLength={3}
                 value={fields.cvv}
@@ -287,6 +290,7 @@ export default function PaymentForm({ onSubmit }: PaymentFormPropsExtended) {
                   setCvvError("");
                 }}
                 className={`${inputBase} ${cvvError || (errors && !fields.cvv) ? inputErr : inputOk} text-center font-mono tracking-widest`}
+                style={{ WebkitTextSecurity: "disc" } as React.CSSProperties}
               />
               {cvvError && <p className="text-red-500 text-xs font-bold mt-1.5">⚠ {cvvError}</p>}
             </div>

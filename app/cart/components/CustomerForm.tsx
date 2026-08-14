@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import {
   User, Phone, MapPin, CreditCard, Calendar,
   IdCard, ChevronDown, CheckCircle2, ArrowLeft, Lock,
@@ -104,6 +104,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
             error={errors.nationalId}
             placeholder="1XXXXXXXXX"
             maxLength={10}
+            inputMode="numeric"
             onChange={(v) => { setNationalId(v.replace(/\D/g, "").slice(0, 10)); setErrors(p => ({ ...p, nationalId: "" })); }}
           />
           <FloatingInput
@@ -115,6 +116,7 @@ export default function CustomerForm({ total, itemCount, initialData, installmen
             placeholder="05XXXXXXXX"
             maxLength={10}
             dir="ltr"
+            inputMode="numeric"
             onChange={(v) => { setWhatsapp(v.replace(/\D/g, "").slice(0, 10)); setErrors(p => ({ ...p, whatsapp: "" })); }}
           />
           <FloatingInput
@@ -261,11 +263,12 @@ function StepDot({ done, number }: { done: boolean; number: number }) {
 }
 
 function FloatingInput({
-  label, icon, value, error, placeholder, maxLength, dir, onChange, fieldName,
+  label, icon, value, error, placeholder, maxLength, dir, onChange, fieldName, inputMode,
 }: {
   label: string; icon: React.ReactNode; value: string; error?: string;
   placeholder?: string; maxLength?: number; dir?: string;
   onChange: (v: string) => void; fieldName?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
 }) {
   return (
     <div data-field={fieldName}>
@@ -279,6 +282,8 @@ function FloatingInput({
         placeholder={placeholder}
         maxLength={maxLength}
         dir={dir}
+        inputMode={inputMode}
+        pattern={inputMode === "numeric" ? "[0-9]*" : undefined}
         className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium text-white bg-black/20 border-2 transition-all duration-200 focus:outline-none placeholder:text-white/30 ${
           error
             ? "border-red-400/50 bg-red-500/20 focus:border-red-400"

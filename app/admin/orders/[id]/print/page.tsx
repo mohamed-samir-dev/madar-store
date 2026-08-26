@@ -67,28 +67,26 @@ export default function PrintOrderPage() {
           body { background: #f0f0f0; display: flex; justify-content: center; }
         }
       `}</style>
-      <div ref={contentRef} style={{ fontFamily: "'Segoe UI', Tahoma, sans-serif", padding: "6px 12px", width: "210mm", height: "297mm", overflow: "hidden", position: "relative", direction: "rtl" }}>
+      <div ref={contentRef} style={{ fontFamily: "'Segoe UI', Tahoma, sans-serif", padding: "10px 16px", width: "210mm", height: "297mm", overflow: "hidden", position: "relative", direction: "rtl" }}>
 
-        {company.header && <img src={company.header} alt="header" style={{ width: "100%", marginBottom: 4 }} />}
+        {company.header && <img src={company.header} alt="header" style={{ width: "100%", marginBottom: 8 }} />}
 
         {/* عنوان العقد */}
-        <div style={{ textAlign: "center", marginBottom: 6 }}>
-          <div style={{ fontSize: 19, fontWeight: 900, color: "#0a2540", letterSpacing: 2 }}>عقد اتفاق بالتقسيط</div>
-          <div style={{ fontSize: 12, color: "#0d3d52", marginTop: 2, fontWeight: 600 }}>
+        <div style={{ textAlign: "center", marginBottom: 10 }}>
+          <div style={{ fontSize: 22, fontWeight: 900, color: "#0a2540", letterSpacing: 2 }}>عقد اتفاق بالتقسيط</div>
+          <div style={{ fontSize: 14, color: "#0d3d52", marginTop: 4, fontWeight: 600 }}>
             بين مؤسسة مدار للأجهزة الإلكترونية <span style={{ color: C4, fontWeight: 800 }}>(المقرض)</span>
-          </div>
-          <div style={{ fontSize: 12, color: "#0d3d52", marginTop: 1, fontWeight: 600 }}>
-            والعميل <span style={{ color: C4, fontWeight: 800 }}>(المستفيد)</span>
+            {" "}&nbsp;والعميل <span style={{ color: C4, fontWeight: 800 }}>(المستفيد)</span>
           </div>
         </div>
 
         {/* صندوقا البيانات + صورة الاتفاق */}
-        <div style={{ display: "flex", alignItems: "stretch", gap: 8, marginBottom: 6, position: "relative" }}>
+        <div style={{ display: "flex", alignItems: "stretch", gap: 8, marginBottom: 10, position: "relative" }}>
 
           {/* بيانات العميل */}
           <div style={{ flex: 1, border: `1px solid #b2dfe3`, borderRadius: 10, overflow: "hidden" }}>
             <div style={{ background: `linear-gradient(135deg, #0d4f57, #0a3d44)`, color: "white", textAlign: "center", padding: "7px 0", fontWeight: 800, fontSize: 15 }}>بيانات العميل</div>
-            <div style={{ padding: "6px 14px 8px", fontSize: 12, color: C2, lineHeight: 1.9, display: "flex", flexDirection: "column", gap: 2 }}>
+            <div style={{ padding: "8px 14px 10px", fontSize: 13, color: C2, lineHeight: 2.0, display: "flex", flexDirection: "column", gap: 3 }}>
               <div style={{ wordBreak: "break-word" }}><span style={{ color: C1, fontWeight: 700 }}>الاسم الرباعي: </span>{order.customer}</div>
               <div style={{ wordBreak: "break-word" }}><span style={{ color: C1, fontWeight: 700 }}>رقم الهوية الوطنية: </span>{order.nationalId || "_______________"}</div>
               <div style={{ wordBreak: "break-word" }}><span style={{ color: C1, fontWeight: 700 }}>رقم الجوال: </span>{order.whatsapp}</div>
@@ -104,7 +102,7 @@ export default function PrintOrderPage() {
           {/* بيانات المؤسسة */}
           <div style={{ flex: 1, border: `1px solid #b2dfe3`, borderRadius: 10, overflow: "hidden" }}>
             <div style={{ background: `linear-gradient(135deg, #0d4f57, #0a3d44)`, color: "white", textAlign: "center", padding: "7px 0", fontWeight: 800, fontSize: 15 }}>بيانات المؤسسة</div>
-            <div style={{ padding: "6px 45px 8px 14px", fontSize: 12, color: C2, lineHeight: 1.9, display: "flex", flexDirection: "column", gap: 2 }}>
+            <div style={{ padding: "8px 45px 10px 14px", fontSize: 13, color: C2, lineHeight: 2.0, display: "flex", flexDirection: "column", gap: 3 }}>
               <div style={{ wordBreak: "break-word" }}><span style={{ color: C1, fontWeight: 700 }}>اسم المؤسسة: </span>مؤسسة مدار للأجهزة الإلكترونية</div>
               <div style={{ wordBreak: "break-word" }}><span style={{ color: C1, fontWeight: 700 }}>سجل تجاري رقم: </span>1010569266</div>
               <div style={{ wordBreak: "break-word" }}><span style={{ color: C1, fontWeight: 700 }}>العنوان: </span>المملكة العربية السعودية</div>
@@ -114,21 +112,21 @@ export default function PrintOrderPage() {
         </div>
 
         {/* وصف الاتفاق */}
-        <div style={{ fontSize: 11, color: "#0a2540", fontWeight: 500, lineHeight: 1.6, marginTop: 4, marginBottom: 4, textAlign: "center", padding: "0 60px" }}>
+        <div style={{ fontSize: 12, color: "#0a2540", fontWeight: 500, lineHeight: 1.8, marginTop: 8, marginBottom: 8, textAlign: "center", padding: "0 60px" }}>
           تم الاتفاق بين الطرفين على أن تقوم المؤسسة ببيع الجهاز الموضح أدناه للعميل نظام التقسيط وفقاً للشروط والأحكام التالية:
         </div>
 
         {/* قسمين بخط رأسي فاصل */}
-        <div style={{ display: "flex", gap: 0, alignItems: "stretch", marginTop: 4 }}>
+        <div style={{ display: "flex", gap: 0, alignItems: "stretch", marginTop: 6 }}>
 
           {/* تفاصيل العقد - يمين */}
           <div style={{ width: "50%", flexShrink: 0, padding: "0 4px 0 8px" }}>
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 5 }}>
-              <div style={{ fontWeight: 900, fontSize: 13, color: "white", background: `linear-gradient(135deg, #0d4f57, #0a3d44)`, borderRadius: 20, padding: "4px 18px" }}>تفاصيل العقد</div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 7 }}>
+              <div style={{ fontWeight: 900, fontSize: 14, color: "white", background: `linear-gradient(135deg, #0d4f57, #0a3d44)`, borderRadius: 20, padding: "5px 20px" }}>تفاصيل العقد</div>
             </div>
-            <div style={{ fontSize: 12, color: C2, lineHeight: 1.7 }}>
+            <div style={{ fontSize: 13, color: C2, lineHeight: 1.85 }}>
               {rows.map(([label, val, icon], i) => (
-                <div key={label} style={{ display: "flex", justifyContent: i < 2 ? "flex-start" : "space-between", alignItems: "center", gap: i < 2 ? 6 : 0, borderBottom: `1px dashed #d0eef0`, paddingBottom: 1, marginBottom: 2 }}>
+                <div key={label} style={{ display: "flex", justifyContent: i < 2 ? "flex-start" : "space-between", alignItems: "center", gap: i < 2 ? 6 : 0, borderBottom: `1px dashed #d0eef0`, paddingBottom: 2, marginBottom: 3 }}>
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: C1, fontWeight: 700, whiteSpace: "nowrap", fontSize: i < 2 ? 11 : "inherit" }}>
                     <span style={{ display: "inline-flex", transform: "scale(1.0)", transformOrigin: "center" }}>{icon}</span>
                     {label}:
@@ -144,10 +142,10 @@ export default function PrintOrderPage() {
 
           {/* شروط وأحكام العقد - شمال */}
           <div style={{ flex: 1, padding: "0 0 0 12px" }}>
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: 5 }}>
-              <div style={{ fontWeight: 900, fontSize: 13, color: "white", background: `linear-gradient(135deg, #0d4f57, #0a3d44)`, borderRadius: 20, padding: "4px 18px" }}>شروط وأحكام العقد</div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 7 }}>
+              <div style={{ fontWeight: 900, fontSize: 14, color: "white", background: `linear-gradient(135deg, #0d4f57, #0a3d44)`, borderRadius: 20, padding: "5px 20px" }}>شروط وأحكام العقد</div>
             </div>
-            <div style={{ fontSize: 11, color: C2, lineHeight: 1.65 }}>
+            <div style={{ fontSize: 12, color: C2, lineHeight: 1.8 }}>
               {[
                 "يقر العميل باستلام الجهاز بحالة جيدة ويكون مسؤولاً عنه بالكامل.",
                 "يلتزم العميل بسداد الأقساط الشهرية في مواعيدها المحددة.",
@@ -160,9 +158,9 @@ export default function PrintOrderPage() {
                 "أي نزاع ينشأ عن هذا العقد يتم حله وديًا، وفي حال تعذر ذلك يُحال للجهات المختصة.",
                 "أقر العميل بقراءة العقد وفهمه والموافقة على جميع بنوده.",
               ].map((t, i) => (
-                <div key={i} style={{ display: "flex", gap: 6, alignItems: "flex-start", borderBottom: `1px dashed #d0eef0`, paddingBottom: 1, marginBottom: 2 }}>
-                  <span style={{ color: C4, fontWeight: 800, minWidth: 16, fontSize: 11, flexShrink: 0, lineHeight: 1.5 }}>{["١","٢","٣","٤","٥","٦","٧","٨","٩","١٠"][i]}.</span>
-                  <span style={{ fontSize: 11, lineHeight: 1.5 }}>{t}</span>
+                <div key={i} style={{ display: "flex", gap: 6, alignItems: "flex-start", borderBottom: `1px dashed #d0eef0`, paddingBottom: 2, marginBottom: 3 }}>
+                  <span style={{ color: C4, fontWeight: 800, minWidth: 18, fontSize: 12, flexShrink: 0, lineHeight: 1.7 }}>{["١","٢","٣","٤","٥","٦","٧","٨","٩","١٠"][i]}.</span>
+                  <span style={{ fontSize: 12, lineHeight: 1.7 }}>{t}</span>
                 </div>
               ))}
             </div>
@@ -170,34 +168,34 @@ export default function PrintOrderPage() {
         </div>
 
         {/* نص الموافقة */}
-        <div style={{ textAlign: "center", fontSize: 11, fontWeight: 700, color: "#0a2540", lineHeight: 1.5, marginTop: 8, marginBottom: 5 }}>
+        <div style={{ textAlign: "center", fontSize: 12, fontWeight: 700, color: "#0a2540", lineHeight: 1.7, marginTop: 12, marginBottom: 8 }}>
           بناءً على ما سبق، يُقرّ الطرفان بالموافقة على جميع ما ورد في هذا العقد، والتزام كل طرف بما يترتب عليه من حقوق وواجبات.
         </div>
 
         {/* التوقيعات */}
-        <div style={{ display: "flex", justifyContent: "space-around", marginBottom: 5, marginTop: 8, paddingRight: -20 }}>
+        <div style={{ display: "flex", justifyContent: "space-around", marginBottom: 6, marginTop: 12, paddingRight: -20 }}>
 
           {/* توقيع العميل */}
-          <div style={{ fontSize: 12, color: C2, textAlign: "right", display: "flex", flexDirection: "column", gap: 4 }}>
-            <div style={{ fontWeight: 900, fontSize: 13, color: C1 }}>توقيع العميل</div>
+          <div style={{ fontSize: 13, color: C2, textAlign: "right", display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ fontWeight: 900, fontSize: 14, color: C1 }}>توقيع العميل</div>
             <div><span style={{ color: C1, fontWeight: 700 }}>الاسم: </span>{order.customer}</div>
             <div><span style={{ color: C1, fontWeight: 700 }}>التاريخ: </span>....../....../.....20م</div>
             <div><span style={{ color: C1, fontWeight: 700 }}>التوقيع: </span>................................</div>
           </div>
 
           {/* توقيع المؤسسة */}
-          <div style={{ fontSize: 12, color: C2, textAlign: "right", display: "flex", flexDirection: "column", gap: 4, position: "relative" }}>
+          <div style={{ fontSize: 13, color: C2, textAlign: "right", display: "flex", flexDirection: "column", gap: 6, position: "relative" }}>
             {company.stamp && (
               <img src={company.stamp} alt="ختم" style={{ position: "absolute", top: -40, left: -130, height: 200, width: 200, objectFit: "contain", opacity: 0.9, zIndex: 2 }} />
             )}
-            <div style={{ fontWeight: 900, fontSize: 13, color: C1 }}>توقيع المؤسسة</div>
+            <div style={{ fontWeight: 900, fontSize: 14, color: C1 }}>توقيع المؤسسة</div>
             <div><span style={{ color: C1, fontWeight: 700 }}>الاسم: </span>مؤسسة مدار للأجهزة الإلكترونية</div>
             <div><span style={{ color: C1, fontWeight: 700 }}>التاريخ: </span>{new Date(order.createdAt).toLocaleDateString("ar-SA")}</div>
             {!company.stamp && <span style={{ display: "inline-block", width: 100, height: 100, border: `1px dashed ${C4}`, borderRadius: "50%" }} />}
           </div>
         </div>
 
-        {company.footer && <img src={company.footer} alt="footer" style={{ width: "100%", marginTop: 2 }} />}
+        {company.footer && <img src={company.footer} alt="footer" style={{ width: "100%", marginTop: 6 }} />}
       </div>
     </>
   );

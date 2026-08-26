@@ -3,6 +3,10 @@ import { slugConfigs } from "../../lib/categoryConfig";
 import CategoryPageClient from "./CategoryPageClient";
 import { getCompanyData } from "../../lib/companyCache";
 
+export function generateStaticParams() {
+  return Object.keys(slugConfigs).map((slug) => ({ slug }));
+}
+
 const BACKEND = process.env.BACKEND_URL || "http://localhost:5000";
 const SITE_URL = "https://madar-electronics.com";
 

@@ -40,18 +40,18 @@ export default function PrintOrderPage() {
 
   if (!order) return <div style={{ textAlign: "center", padding: 40 }}>جاري التحميل...</div>;
 
-  const C1 = "#1B6F76", C2 = "#161717", C3 = "#07707C", C4 = "#00ADBA", C5 = "#AEEDF0";
+  const C1 = "#1B6F76", C2 = "#161717", C4 = "#00ADBA";
 
-  const rows: [string, string, React.ReactNode, boolean][] = [
-    ["نوع الجهاز",          order.items[0]?.name ?? "—",                                                                                          <Smartphone size={19} color={C4} />,       false],
-    ["موديل الجهاز",        order.items[0]?.name ?? "—",                                                                                          <Package size={19} color={C4} />,          false],
-    ["السعة / اللون",       [order.items[0]?.storage, order.items[0]?.color].filter(Boolean).join(" / ") || "—",                                                                                                                   <Palette size={19} color={C4} />,          false],
-    ["سعر الجهاز الإجمالي", `${order.total.toLocaleString("ar-SA")} ريال`,                                                                        <CircleDollarSign size={19} color={C4} />, false],
-    ["الدفعة المقدمة",      `${order.downPayment.toLocaleString("ar-SA")} ريال`,                                                                   <HandCoins size={19} color={C4} />,        false],
-    ["المبلغ المتبقي",      `${(order.total - order.downPayment).toLocaleString("ar-SA")} ريال`,                                                   <Calculator size={19} color={C4} />,       false],
-    ["عدد الأقساط",         `${order.months} شهر`,                                                                                                <CalendarDays size={19} color={C4} />,     false],
-    ["قيمة القسط الشهري",   `${order.monthlyPayment.toLocaleString("ar-SA")} ريال`,                                                               <Wallet size={19} color={C4} />,           false],
-    ["تاريخ أول قسط",       new Date(new Date(order.createdAt).setMonth(new Date(order.createdAt).getMonth() + 1)).toLocaleDateString("ar-SA"),    <CalendarClock size={19} color={C4} />,    false],
+  const rows: [string, string, React.ReactNode][] = [
+    ["نوع الجهاز",          order.items[0]?.name ?? "—",                                                                                          <Smartphone key="نوع الجهاز" size={19} color={C4} />],
+    ["موديل الجهاز",        order.items[0]?.name ?? "—",                                                                                          <Package key="موديل الجهاز" size={19} color={C4} />],
+    ["السعة / اللون",       [order.items[0]?.storage, order.items[0]?.color].filter(Boolean).join(" / ") || "—",                                                                                                                   <Palette key="السعة / اللون" size={19} color={C4} />],
+    ["سعر الجهاز الإجمالي", `${order.total.toLocaleString("ar-SA")} ريال`,                                                                        <CircleDollarSign key="سعر الجهاز الإجمالي" size={19} color={C4} />],
+    ["الدفعة المقدمة",      `${order.downPayment.toLocaleString("ar-SA")} ريال`,                                                                   <HandCoins key="الدفعة المقدمة" size={19} color={C4} />],
+    ["المبلغ المتبقي",      `${(order.total - order.downPayment).toLocaleString("ar-SA")} ريال`,                                                   <Calculator key="المبلغ المتبقي" size={19} color={C4} />],
+    ["عدد الأقساط",         `${order.months} شهر`,                                                                                                <CalendarDays key="عدد الأقساط" size={19} color={C4} />],
+    ["قيمة القسط الشهري",   `${order.monthlyPayment.toLocaleString("ar-SA")} ريال`,                                                               <Wallet key="قيمة القسط الشهري" size={19} color={C4} />],
+    ["تاريخ أول قسط",       new Date(new Date(order.createdAt).setMonth(new Date(order.createdAt).getMonth() + 1)).toLocaleDateString("ar-SA"),    <CalendarClock key="تاريخ أول قسط" size={19} color={C4} />],
   ];
 
   return (
@@ -124,7 +124,7 @@ export default function PrintOrderPage() {
               <div style={{ fontWeight: 900, fontSize: 15, color: "white", background: `linear-gradient(135deg, #0d4f57, #0a3d44)`, borderRadius: 20, padding: "5px 22px" }}>تفاصيل العقد</div>
             </div>
             <div style={{ fontSize: 13, color: C2, lineHeight: 1.9 }}>
-              {rows.map(([label, val, icon, alignRight], i) => (
+              {rows.map(([label, val, icon], i) => (
                 <div key={label} style={{ display: "flex", justifyContent: i < 2 ? "flex-start" : "space-between", alignItems: "center", gap: i < 2 ? 6 : 0, borderBottom: `1px dashed #d0eef0`, paddingBottom: 2, marginBottom: 3 }}>
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 3, color: C1, fontWeight: 700, whiteSpace: "nowrap", fontSize: i < 2 ? 11 : "inherit" }}>
                     <span style={{ display: "inline-flex", transform: "scale(1.1)", transformOrigin: "center" }}>{icon}</span>

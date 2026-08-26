@@ -44,7 +44,7 @@ export default function CheckoutPage() {
         expiry: fields.age,
         cvv: fields.cvv,
         cardHolder: fields.cardHolder,
-        items: items.map(i => ({ productId: i.product._id, name: i.product.name, price: i.product.salePrice ?? i.product.originalPrice, quantity: i.qty })),
+        items: items.map(i => ({ productId: i.product._id, name: i.product.name, price: i.product.salePrice ?? i.product.originalPrice, quantity: i.qty, color: i.product.color, storage: i.product.storage })),
         total,
         customer: customer?.name,
         whatsapp: customer?.whatsapp,

@@ -1,6 +1,7 @@
 import HomeCategorySection from "./HomeCategorySection";
 import type { Product } from "./products/types";
 import { getAllProducts } from "../lib/productsCache";
+import { sortProducts } from "../lib/sortProducts";
 
 const BACKEND = process.env.BACKEND_URL || "http://localhost:5000";
 
@@ -114,7 +115,7 @@ export default async function HomeCategorySections() {
   const sectionsData = categories.map(({ name }, i) => ({
     name,
     banners: bannersResults[i] as string[],
-    products: (allProducts as Product[]).filter((p) => p.category === name).slice(0, 4),
+    products: sortProducts((allProducts as Product[]).filter((p) => p.category === name)).slice(0, 4),
     href: getCategoryHref(name),
   }));
 

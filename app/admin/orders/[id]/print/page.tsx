@@ -196,8 +196,8 @@ export default function PrintOrderPage() {
         </div>
 
         {company.footer && (
-          <div style={{ marginTop: 16 }}>
-            <div style={{ borderTop: `2px solid ${C4}`, marginBottom: 8 }} />
+          <div style={{ marginTop: 32 }}>
+            <div style={{ borderTop: `2px solid ${C4}`, marginBottom: 16 }} />
             <img src={company.footer} alt="footer" style={{ width: "100%" }} />
           </div>
         )}

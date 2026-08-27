@@ -16,6 +16,11 @@ export const getAllProducts = unstable_cache(
 );
 
 export async function getProductById(id: string) {
-  const products = await getAllProducts();
-  return products.find((p: { _id: string }) => p._id === id) ?? null;
+  try {
+    const res = await fetch(`${BACKEND}/api/products/${id}`, { next: { tags: [PRODUCTS_TAG] } });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
 }

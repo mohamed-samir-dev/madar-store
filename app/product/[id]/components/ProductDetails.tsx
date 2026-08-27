@@ -21,7 +21,21 @@ const TABS = [
   { key: "reviews", label: "التقييمات" },
 ];
 
-export default function ProductDetails({ description, gallery, specifications, rating, reviews }: ProductDetailsProps) {
+const SPEC_LABELS: Record<string, string> = {
+  screen: "الشاشة",
+  processor: "المعالج",
+  ram: "الرام",
+  storage: "التخزين",
+  rearCamera: "الكاميرا الخلفية",
+  frontCamera: "الكاميرا الأمامية",
+  battery: "البطارية",
+  batteryLife: "عمر البطارية",
+  charging: "الشحن",
+  os: "نظام التشغيل",
+  extras: "مميزات إضافية",
+};
+
+export default function ProductDetails({ description, specs, gallery, specifications, rating, reviews }: ProductDetailsProps) {
   const [active, setActive] = useState("overview");
 
   return (
@@ -87,7 +101,29 @@ export default function ProductDetails({ description, gallery, specifications, r
                   ))}
                 </div>
               )}
-              {!description && (!gallery || gallery.length === 0) && (
+              {specs && Object.values(specs).some(Boolean) && (
+                <div className="rounded-2xl border border-white/10 overflow-hidden">
+                  <div className="bg-white/10 px-5 py-3 border-b border-white/10">
+                    <h3 className="text-sm font-bold text-teal-300">المواصفات الرئيسية</h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2">
+                    {Object.entries(specs)
+                      .filter(([, v]) => v)
+                      .map(([key, value], ii) => (
+                        <div
+                          key={key}
+                          className={`flex items-center justify-between px-5 py-3.5 border-b border-white/10 ${
+                            ii % 2 === 0 ? "sm:border-l" : ""
+                          }`}
+                        >
+                          <span className="text-xs text-white/70">{SPEC_LABELS[key] ?? key}</span>
+                          <span className="text-xs font-semibold text-teal-300">{value}</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+              {!description && (!gallery || gallery.length === 0) && (!specs || !Object.values(specs).some(Boolean)) && (
                 <p className="text-sm text-white/60">لا توجد نظرة عامة متاحة.</p>
               )}
             </div>
@@ -95,7 +131,7 @@ export default function ProductDetails({ description, gallery, specifications, r
 
           {/* Specs */}
           {active === "specs" && (
-            <div>
+            <div className="space-y-6">
               {specifications && specifications.length > 0 ? (
                 <div className="rounded-2xl border border-white/10 overflow-hidden">
                   {specifications.map((group, gi) => (
@@ -118,6 +154,24 @@ export default function ProductDetails({ description, gallery, specifications, r
                       </div>
                     </div>
                   ))}
+                </div>
+              ) : specs && Object.values(specs).some(Boolean) ? (
+                <div className="rounded-2xl border border-white/10 overflow-hidden">
+                  <div className="grid grid-cols-1 sm:grid-cols-2">
+                    {Object.entries(specs)
+                      .filter(([, v]) => v)
+                      .map(([key, value], ii) => (
+                        <div
+                          key={key}
+                          className={`flex items-center justify-between px-5 py-3.5 border-b border-white/10 ${
+                            ii % 2 === 0 ? "sm:border-l" : ""
+                          }`}
+                        >
+                          <span className="text-xs text-white/70">{SPEC_LABELS[key] ?? key}</span>
+                          <span className="text-xs font-semibold text-teal-300">{value}</span>
+                        </div>
+                      ))}
+                  </div>
                 </div>
               ) : (
                 <p className="text-sm text-white/60">لا توجد مواصفات متاحة.</p>

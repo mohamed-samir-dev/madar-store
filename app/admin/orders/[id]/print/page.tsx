@@ -117,7 +117,7 @@ export default function PrintOrderPage() {
         </div>
 
         {/* قسمين بخط رأسي فاصل */}
-        <div style={{ display: "flex", gap: 0, alignItems: "stretch", marginTop: 4 }}>
+        <div style={{ display: "flex", gap: 0, alignItems: "stretch", marginTop: 16 }}>
 
           {/* تفاصيل العقد - يمين */}
           <div style={{ width: "50%", flexShrink: 0, padding: "0 4px 0 8px" }}>

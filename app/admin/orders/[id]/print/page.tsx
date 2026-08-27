@@ -173,7 +173,7 @@ export default function PrintOrderPage() {
         </div>
 
         {/* التوقيعات */}
-        <div style={{ display: "flex", justifyContent: "space-around", marginBottom: 5, marginTop: 8, paddingRight: -20 }}>
+        <div style={{ display: "flex", justifyContent: "space-around", marginBottom: 5, marginTop: 24, paddingRight: -20 }}>
 
           {/* توقيع العميل */}
           <div style={{ fontSize: 12, color: C2, textAlign: "right", display: "flex", flexDirection: "column", gap: 4 }}>
